@@ -57,11 +57,19 @@ async def process_payment(transaction: Transaction):
             password=DB_PASSWORD
         )
 
-        await conn.execute('''
+        await conn.execute(
+            '''
             INSERT INTO transactions (transaction_id, amount, currency, merchant_id, customer_id, timestamp, status)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
-        ''', transaction.transaction_id, transaction.amount, transaction.currency,
-           transaction.merchant_id, transaction.customer_id, datetime.utcnow(), "approved")
+            ''',
+            transaction.transaction_id,
+            transaction.amount,
+            transaction.currency,
+            transaction.merchant_id,
+            transaction.customer_id,
+            datetime.utcnow(),
+            "approved"
+        )
 
         await conn.close()
 
@@ -77,3 +85,4 @@ async def process_payment(transaction: Transaction):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    
