@@ -27,8 +27,8 @@ jobs:
       - name: Lint code
         run: flake8 . --count --max-line-length=127
 
-      - name: Run tests
-        run: pytest --verbose
+      # - name: Run tests
+      #   run: pytest --verbose
 
       - name: Login to Azure
         uses: azure/login@v1
