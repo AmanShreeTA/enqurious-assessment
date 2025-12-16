@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 PORT = int(os.getenv("PORT", "3000"))
 
+
 def calculate_risk_score(transaction):
     """Simple fraud detection logic"""
     risk_score = 0.0
@@ -21,12 +22,14 @@ def calculate_risk_score(transaction):
 
     return min(risk_score, 1.0)
 
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({
         "status": "healthy",
         "service": "fraud-detection"
     })
+
 
 @app.route('/api/check-fraud', methods=['POST'])
 def check_fraud():
@@ -47,6 +50,7 @@ def check_fraud():
             "error": "Fraud detection failed",
             "message": str(e)
         }), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)

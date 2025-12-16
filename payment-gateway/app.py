@@ -15,6 +15,7 @@ DB_NAME = os.getenv("DB_NAME", "transactions")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
 
+
 class Transaction(BaseModel):
     transaction_id: str
     amount: float
@@ -22,9 +23,11 @@ class Transaction(BaseModel):
     merchant_id: str
     customer_id: str
 
+
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "payment-gateway"}
+
 
 @app.post("/api/process-payment")
 async def process_payment(transaction: Transaction):
