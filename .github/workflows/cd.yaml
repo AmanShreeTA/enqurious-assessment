@@ -1,0 +1,27 @@
+name: CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set kubeconfig
+        run: az aks get-credentials --resource-group globalfinance-prod-rg --name globalfinance-aks
+
+      - name: Deploy to AKS
+        run: |
+          kubectl set image deployment/payment-gateway payment-gateway=globalfinanceacraman.azurecr.io/payment-gateway:latest -n globalfinance
+          kubectl set image deployment/fraud-detection fraud-detection=globalfinanceacraman.azurecr.io/fraud-detection:latest -n globalfinance
+          kubectl rollout status deployment/payment-gateway -n globalfinance
+          kubectl rollout status deployment/fraud-detection -n globalfinance

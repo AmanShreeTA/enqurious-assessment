@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r payment-gateway/requirements.txt
+          pip install -r fraud-detection/requirements.txt
+          pip install pytest flake8
+
+      - name: Lint code
+        run: flake8 . --count --max-line-length=127
+
+      - name: Run tests
+        run: pytest --verbose
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and Push Docker images
+        run: |
+          az acr build --registry globalfinanceacraman --image payment-gateway:latest payment-gateway/
+          az acr build --registry globalfinanceacraman --image fraud-detection:latest fraud-detection/

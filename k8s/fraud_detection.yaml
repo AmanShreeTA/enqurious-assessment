@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-detection
+  namespace: globalfinance
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fraud-detection
+  template:
+    metadata:
+      labels:
+        app: fraud-detection
+    spec:
+      containers:
+      - name: fraud-detection
+        image: globalfinanceacraman.azurecr.io/fraud-detection:v1
+        ports:
+          - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-detection
+  namespace: globalfinance
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: fraud-detection
